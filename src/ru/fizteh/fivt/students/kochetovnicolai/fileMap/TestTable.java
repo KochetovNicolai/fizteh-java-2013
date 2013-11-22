@@ -119,6 +119,21 @@ public class TestTable {
         Assert.assertEquals("rollback should return 3", table.rollback(), 3);
     }
 
+    @Test(timeout = 90000)
+    public void putAndCommitMore() throws IOException {
+        ArrayList<Class<?>> types = new ArrayList<>();
+        types.add(Integer.class);
+        types.add(String.class);
+        Table table = provider.createTable("jastanothertable", types);
+        for (int i = 0; i < 1000; i++) {
+            Storeable storeable = new TableRecord(types);
+            storeable.setColumnAt(0, i);
+            storeable.setColumnAt(1, Integer.toString(i));
+            table.put(Integer.toString(i), storeable);
+            table.commit();
+        }
+    }
+
     @Test
     public void tableShouldBeConsistent() throws ParseException, IOException {
         Storeable value4 = provider.deserialize(table, "<row><col>value4</col></row>");
