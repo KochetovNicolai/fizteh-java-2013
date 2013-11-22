@@ -203,4 +203,24 @@ public class TableRecord implements Storeable {
     List<Class<?>> getTypes() {
         return types;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append("[");
+        boolean isFirst = true;
+        for (Object value : values) {
+            if (!isFirst) {
+                sb.append(",");
+            } else {
+                isFirst = false;
+            }
+            if (value != null) {
+                sb.append(value);
+            }
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 }
