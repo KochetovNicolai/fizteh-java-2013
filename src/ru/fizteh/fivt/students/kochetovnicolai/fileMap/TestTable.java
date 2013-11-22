@@ -119,13 +119,13 @@ public class TestTable {
         Assert.assertEquals("rollback should return 3", table.rollback(), 3);
     }
 
-    @Test(timeout = 90000)
+    @Test(timeout = 15000)
     public void putAndCommitMore() throws IOException {
         ArrayList<Class<?>> types = new ArrayList<>();
         types.add(Integer.class);
         types.add(String.class);
         Table table = provider.createTable("jastanothertable", types);
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1024; i++) {
             Storeable storeable = new TableRecord(types);
             storeable.setColumnAt(0, i);
             storeable.setColumnAt(1, Integer.toString(i));
@@ -135,7 +135,7 @@ public class TestTable {
     }
 
     @Test
-    public void tableShouldBeConsistent() throws ParseException, IOException {
+    public void tableShouldBeConsistent() throws ParseException, IOException, InterruptedException {
         Storeable value4 = provider.deserialize(table, "<row><col>value4</col></row>");
         Storeable value1 = provider.deserialize(table, "<row><col>value1</col></row>");
         Storeable value2 = provider.deserialize(table, "<row><col>value2</col></row>");
@@ -151,6 +151,7 @@ public class TestTable {
         table = null;
         provider = null;
         factory = null;
+        //Thread.sleep(5000);
 
         factory = new DistributedTableProviderFactory();
         provider = factory.create(folder.getRoot().getPath());

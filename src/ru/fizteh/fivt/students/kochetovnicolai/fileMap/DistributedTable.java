@@ -347,15 +347,16 @@ public class DistributedTable extends FileManager implements Table {
             }
             changes.get().clear();
             shouldWrite = true;
-            if (writeThread == null || !writeThread.isAlive()) {
+            if (writeThread == null || writeThread.isInterrupted()) {
                 writeThread = new Thread() {
                     @Override
                     public void run() {
                         while(true) {
                             cacheLock.writeLock().lock();
                             try {
-                                if (!shouldWrite) {
+                                if (shouldWrite) {
                                     shouldWrite = false;
+                                } else {
                                     return;
                                 }
                             } finally {
