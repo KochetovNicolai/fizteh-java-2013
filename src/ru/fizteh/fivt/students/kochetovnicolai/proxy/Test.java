@@ -90,7 +90,7 @@ public class Test {
         try {
             proxy.execute(null);
         } catch (IllegalStateException e) {
-
+            System.out.println("I hate empty try/catch blocks!");
         }
         proxy.foo();
         proxy.toString();
