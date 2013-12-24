@@ -104,7 +104,7 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
             ga.endMethod();
         }
 
-        java.lang.reflect.Method[] methods = interFace.getDeclaredMethods();
+        java.lang.reflect.Method[] methods = interFace.getMethods();
         for (java.lang.reflect.Method method : methods) {
             if (method.getDeclaringClass().equals(Object.class)) {
                 continue;
@@ -269,6 +269,9 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                     ga.unbox(returnType);
                 }
                 if (returnType.equals(Type.getType(String.class))) {
+                    ga.unbox(returnType);
+                }
+                if (returnType.equals(Type.getType(Class.class))) {
                     ga.unbox(returnType);
                 }
                 //ga.mark(isNull);
