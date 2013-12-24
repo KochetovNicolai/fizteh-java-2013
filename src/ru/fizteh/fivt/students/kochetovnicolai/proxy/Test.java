@@ -13,7 +13,7 @@ import java.io.StringWriter;
 public class Test {
     public interface Executable {
         Object execute(Object[] args);
-        void foo();
+        void foo(int a);
     }
 
     private static ClassWriter newClassWriter() {
@@ -66,6 +66,7 @@ public class Test {
     }
 
     public static void main(String[] args) throws Exception {
+
         Executable executable = new Executable() {
             @Override
             public Object execute(Object[] args) {
@@ -74,7 +75,7 @@ public class Test {
                 return new Integer(10);
             }
             @Override
-            public void foo() {
+            public void foo(int a) {
                 System.out.println("film film film");
             }
         };
@@ -92,7 +93,7 @@ public class Test {
         } catch (IllegalStateException e) {
             System.out.println("I hate empty try/catch blocks!");
         }
-        proxy.foo();
+        proxy.foo(42);
         proxy.toString();
         System.out.println(writer);
     }

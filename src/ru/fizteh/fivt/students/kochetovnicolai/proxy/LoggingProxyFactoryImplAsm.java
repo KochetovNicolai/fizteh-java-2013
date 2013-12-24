@@ -47,9 +47,9 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 "object", Type.getDescriptor(object.getClass()), null, null)
                 .visitEnd();
 
-        cw.visitField(Opcodes.ACC_PRIVATE,
+        /*cw.visitField(Opcodes.ACC_PRIVATE,
                 "nullObject", Type.getDescriptor(Object.class), null, null)
-                .visitEnd();
+                .visitEnd();      */
 
         cw.visitField(Opcodes.ACC_PRIVATE,
                 "returned", Type.getDescriptor(Object.class), null, null)
@@ -59,9 +59,9 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 "throwable", Type.getDescriptor(Throwable.class), null, null)
                 .visitEnd();
 
-        cw.visitField(Opcodes.ACC_PRIVATE,
+        /*cw.visitField(Opcodes.ACC_PRIVATE,
                 "nullThrowable", Type.getDescriptor(Throwable.class), null, null)
-                .visitEnd();
+                .visitEnd(); */
 
         cw.visitField(Opcodes.ACC_PRIVATE,
                 "factory", Type.getDescriptor(LoggingProxyFactoryImplAsm.class), null, null)
@@ -106,6 +106,9 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
 
         java.lang.reflect.Method[] methods = interFace.getMethods();
         for (java.lang.reflect.Method method : methods) {
+            if (method.getDeclaringClass().equals(Object.class)) {
+                continue;
+            }
             Class<?>[] argTypes = method.getParameterTypes();
             Type[] types1 = new Type[argTypes.length];
             for (int i = 0; i < argTypes.length; i++) {
@@ -156,13 +159,10 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 ...
                 argument length - 1
             */
+            //method.setAccessible(true);
 
             ga.invokeInterface(Type.getType(interFace), mt);
-            if (method.getDeclaringClass().equals(Object.class)) {
-                ga.returnValue();
-                ga.endMethod();
-                continue;
-            }
+            //ga.invokeVirtual(objectType, mt);
             ga.goTo(finallyLabel);
 
 
@@ -192,15 +192,20 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 ga.dup();
                 ga.push(i);
                 ga.loadArg(i);
+                if (types1[i].getDescriptor().length() == 1) {
+                    ga.box(types1[i]);
+                }
                 ga.arrayStore(Type.getType(Object.class));
             }
-            ga.loadThis();
-            ga.getField(type, "nullObject", Type.getType(Object.class));
+            //ga.loadThis();
+            //ga.getField(type, "nullObject", Type.getType(Object.class));
+            ga.push((Type) null);
             ga.loadThis();
             ga.getField(type, "throwable", Type.getType(Throwable.class));
             ga.push(false);
 
             ga.invokeVirtual(thisType, writeLog);
+            //ga.invokeStatic(Type.getType(ConsoleLoggerInvocationHandler.class), writeLog);   <---IllegalAccessError
             ga.loadThis();
             ga.getField(type, "throwable", Type.getType(Throwable.class));
             ga.throwException();
@@ -230,12 +235,16 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 ga.dup();
                 ga.push(i);
                 ga.loadArg(i);
+                if (types1[i].getDescriptor().length() == 1) {
+                    ga.box(types1[i]);
+                }
                 ga.arrayStore(Type.getType(Object.class));
             }
             ga.loadThis();
             ga.getField(type, "returned", Type.getType(Object.class));
-            ga.loadThis();
-            ga.getField(type, "nullThrowable", Type.getType(Throwable.class));
+            //ga.loadThis();
+            //ga.getField(type, "nullThrowable", Type.getType(Throwable.class));
+            ga.push((Type) null);
             ga.push(returned);
             ga.invokeVirtual(thisType, writeLog);
 
