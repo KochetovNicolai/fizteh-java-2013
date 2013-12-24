@@ -96,6 +96,7 @@ public class Test {
         }
         proxy.foo(42);
         proxy.toString();
+        proxy.hashCode();
         System.out.println(writer);
     }
 }

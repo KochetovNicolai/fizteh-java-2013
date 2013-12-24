@@ -265,6 +265,7 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 }
             }
             //ga.cast(Type.getType(Object.class), Type.getType(method.getReturnType()));
+            ga.unbox(Type.getType(method.getReturnType()));
             ga.returnValue();
             ga.endMethod();
         }
@@ -291,6 +292,9 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
         }
         if (interfaceClass == null) {
             throw new IllegalArgumentException("interfaceClass shouldn't be null");
+        }
+        if (!interfaceClass.isInterface()) {
+            throw new IllegalArgumentException("interfaceClass is not interface");
         }
         if (!interfaceClass.isAssignableFrom(implementation.getClass())) {
             throw new IllegalArgumentException(implementation + " doesn't implements " + interfaceClass);
