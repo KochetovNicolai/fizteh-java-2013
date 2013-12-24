@@ -254,12 +254,17 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
 
             if (returned) {
                 ga.loadThis();
-                ga.getField(type, "returned", Type.getType(Object.class));
                 Type returnType = Type.getType(method.getReturnType());
+                ga.getField(type, "returned", Type.getType(Object.class));
                 if (returnType.getDescriptor().length() == 1) {
                     ga.unbox(returnType);
                 }
+                if (returnType.getDescriptor().charAt(0) == '[') {
+                    //ga.cast(Type.getType(Object.class), Type.getType(method.getReturnType()));
+                    ga.unbox(returnType);
+                }
             }
+            //ga.cast(Type.getType(Object.class), Type.getType(method.getReturnType()));
             ga.returnValue();
             ga.endMethod();
         }

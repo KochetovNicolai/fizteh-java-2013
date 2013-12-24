@@ -104,7 +104,11 @@ class ConsoleLoggerInvocationHandler implements InvocationHandler {
                 Object writingValue = null;
                 if (returnValue != null) {
                     if (returnValue.getClass().isArray()) {
-                        writingValue = createJSONArray((Object[]) returnValue, new IdentityHashMap<>());
+                        try {
+                            writingValue = createJSONArray((Object[]) returnValue, new IdentityHashMap<>());
+                        } catch (ClassCastException e) {
+                            writingValue = returnValue.toString();
+                        }
                     } else if (Iterable.class.isAssignableFrom(returnValue.getClass())) {
                         writingValue = resolveIterable((Iterable) returnValue, new IdentityHashMap<>());
                     } else {
