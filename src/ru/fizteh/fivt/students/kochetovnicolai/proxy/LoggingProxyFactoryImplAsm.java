@@ -265,7 +265,7 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 }
             }
             //ga.cast(Type.getType(Object.class), Type.getType(method.getReturnType()));
-            ga.unbox(Type.getType(method.getReturnType()));
+            //ga.unbox(Type.getType(method.getReturnType()));
             ga.returnValue();
             ga.endMethod();
         }
