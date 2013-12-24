@@ -13,7 +13,8 @@ import java.io.StringWriter;
 public class Test {
     public interface Executable {
         Object execute(Object[] args);
-        Class foo(int a);
+        void foo(int a);
+        String toString();
     }
 
     private static ClassWriter newClassWriter() {
@@ -71,13 +72,17 @@ public class Test {
             @Override
             public Object execute(Object[] args) {
                 System.out.println("test test test");
-                //throw new IllegalStateException("ups!");
+                if (args == null) {
+
+                    throw new IllegalStateException("ups!");
+                }
+
                 return null;
             }
             @Override
-            public Class foo(int a) {
+            public void foo(int a) {
                 System.out.println("film film film");
-                return String.class;
+                return;
             }
         };
 
@@ -89,6 +94,11 @@ public class Test {
         StringWriter writer = new StringWriter();
         Executable proxy = (Executable) (new LoggingProxyFactoryImplAsm()).wrap(writer, executable, Executable.class);
         //proxy.execute(null);
+
+        java.lang.reflect.Method[] methods = Executable.class.getMethods();
+        for (java.lang.reflect.Method method : methods) {
+            System.out.println(method.getName() + method.getDeclaringClass());
+        }
         try {
             proxy.execute(null);
         } catch (IllegalStateException e) {

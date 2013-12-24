@@ -105,8 +105,16 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
         }
 
         java.lang.reflect.Method[] methods = interFace.getMethods();
+        java.lang.reflect.Method[] objectMethods = Object.class.getMethods();
+
         for (java.lang.reflect.Method method : methods) {
-            if (method.getDeclaringClass().equals(Object.class)) {
+            boolean toContinue = false;
+            for (java.lang.reflect.Method objectMethod : objectMethods) {
+                if (objectMethod.getName().equals(method.getName())) {
+                    toContinue = true;
+                }
+            }
+            if (toContinue) {
                 continue;
             }
             Class<?>[] argTypes = method.getParameterTypes();
