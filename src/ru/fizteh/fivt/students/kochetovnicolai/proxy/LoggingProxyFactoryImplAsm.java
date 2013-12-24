@@ -33,9 +33,6 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
         Type objectType = Type.getType(object.getClass());
         Type thisType = Type.getType(LoggingProxyFactoryImplAsm.class);
 
-        //System.out.println(Type.getType(interFace).getInternalName());
-        //System.out.println(object.getClass().getSimpleName());
-
         cw.visit(Opcodes.V1_7, Opcodes.ACC_PUBLIC, type.getInternalName(), null,
                 "java/lang/Object", new String[] {Type.getType(interFace).getInternalName()});
 
@@ -47,10 +44,6 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 "object", Type.getDescriptor(object.getClass()), null, null)
                 .visitEnd();
 
-        /*cw.visitField(Opcodes.ACC_PRIVATE,
-                "nullObject", Type.getDescriptor(Object.class), null, null)
-                .visitEnd();      */
-
         cw.visitField(Opcodes.ACC_PRIVATE,
                 "returned", Type.getDescriptor(Object.class), null, null)
                 .visitEnd();
@@ -58,10 +51,6 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
         cw.visitField(Opcodes.ACC_PRIVATE,
                 "throwable", Type.getDescriptor(Throwable.class), null, null)
                 .visitEnd();
-
-        /*cw.visitField(Opcodes.ACC_PRIVATE,
-                "nullThrowable", Type.getDescriptor(Throwable.class), null, null)
-                .visitEnd(); */
 
         cw.visitField(Opcodes.ACC_PRIVATE,
                 "factory", Type.getDescriptor(LoggingProxyFactoryImplAsm.class), null, null)
@@ -72,20 +61,12 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
 
             MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, mt.getName(), mt.getDescriptor(), null, null);
             GeneratorAdapter ga = new GeneratorAdapter(mv, Opcodes.ACC_PUBLIC, mt.getName(), mt.getDescriptor());
-            //MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
-            //GeneratorAdapter ga = new GeneratorAdapter(mv, Opcodes.ACC_PUBLIC, "<init>", "()V");
             ga.visitCode();
 
             ga.loadArg(2);
             Method doNothing = new Method("doNothing", "()V"); //Type.VOID_TYPE, new Type[]{});
             ga.invokeVirtual(Type.getType(LoggingProxyFactoryImplAsm.class), doNothing);
 
-            /*
-            Type printStreamType = Type.getType(PrintStream.class);
-            ga.getStatic(Type.getType(System.class), "out", printStreamType);
-            ga.push("constructor");
-            ga.invokeVirtual(printStreamType, new Method("println", "(Ljava/lang/String;)V"));
-            //*/
             ga.loadThis();
             ga.invokeConstructor(
                     Type.getType("java/lang/Object"),
@@ -108,13 +89,18 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
         java.lang.reflect.Method[] objectMethods = Object.class.getMethods();
 
         for (java.lang.reflect.Method method : methods) {
-            boolean toContinue = false;
+            /*boolean toContinue = false;
             for (java.lang.reflect.Method objectMethod : objectMethods) {
                 if (objectMethod.getName().equals(method.getName())) {
                     toContinue = true;
                 }
-            }
-            if (toContinue) {
+            }*/
+            try {
+                if (object.getClass().getMethod(method.getName(), method.getParameterTypes())
+                        .getDeclaringClass().equals(Object.class)) {
+                    continue;
+                }
+            } catch (NoSuchMethodException e) {
                 continue;
             }
             Class<?>[] argTypes = method.getParameterTypes();
