@@ -104,7 +104,7 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
             ga.endMethod();
         }
 
-        java.lang.reflect.Method[] methods = interFace.getMethods();
+        java.lang.reflect.Method[] methods = interFace.getDeclaredMethods();
         for (java.lang.reflect.Method method : methods) {
             if (method.getDeclaringClass().equals(Object.class)) {
                 continue;
@@ -218,10 +218,13 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
             if (returned) {
                 ga.loadThis();
                 ga.swap();
+                //Label isNull = ga.newLabel();
+                //ga.ifNull(isNull);
                 Type returnType = Type.getType(method.getReturnType());
                 if (returnType.getDescriptor().length() == 1) {
                     ga.box(returnType);
                 }
+                //ga.mark(isNull);
                 ga.putField(type, "returned", Type.getType(Object.class));
             }
 
@@ -256,6 +259,8 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 ga.loadThis();
                 Type returnType = Type.getType(method.getReturnType());
                 ga.getField(type, "returned", Type.getType(Object.class));
+                //Label isNull = ga.newLabel();
+                //ga.ifNull(isNull);
                 if (returnType.getDescriptor().length() == 1) {
                     ga.unbox(returnType);
                 }
@@ -263,6 +268,10 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                     //ga.cast(Type.getType(Object.class), Type.getType(method.getReturnType()));
                     ga.unbox(returnType);
                 }
+                if (returnType.equals(Type.getType(String.class))) {
+                    ga.unbox(returnType);
+                }
+                //ga.mark(isNull);
             }
             //ga.cast(Type.getType(Object.class), Type.getType(method.getReturnType()));
             //ga.unbox(Type.getType(method.getReturnType()));

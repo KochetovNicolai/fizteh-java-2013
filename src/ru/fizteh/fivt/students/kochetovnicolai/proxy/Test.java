@@ -13,7 +13,7 @@ import java.io.StringWriter;
 public class Test {
     public interface Executable {
         Object execute(Object[] args);
-        int[] foo(int a);
+        String foo(int a);
     }
 
     private static ClassWriter newClassWriter() {
@@ -72,12 +72,12 @@ public class Test {
             public Object execute(Object[] args) {
                 System.out.println("test test test");
                 //throw new IllegalStateException("ups!");
-                return new Integer(10);
+                return null;
             }
             @Override
-            public int[] foo(int a) {
+            public String foo(int a) {
                 System.out.println("film film film");
-                return null;
+                return new String("abc");
             }
         };
 
