@@ -13,7 +13,7 @@ import java.io.StringWriter;
 public class Test {
     public interface Executable {
         Object execute(Object[] args);
-        void foo(int a);
+        int foo(int a);
     }
 
     private static ClassWriter newClassWriter() {
@@ -75,8 +75,9 @@ public class Test {
                 return new Integer(10);
             }
             @Override
-            public void foo(int a) {
+            public int foo(int a) {
                 System.out.println("film film film");
+                return 0;
             }
         };
 
