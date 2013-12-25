@@ -89,15 +89,16 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
         java.lang.reflect.Method[] objectMethods = Object.class.getMethods();
 
         for (java.lang.reflect.Method method : methods) {
-            /*boolean toContinue = false;
+            boolean hasMethod = false;
             for (java.lang.reflect.Method objectMethod : objectMethods) {
                 if (objectMethod.getName().equals(method.getName())) {
-                    toContinue = true;
+                    hasMethod = true;
                 }
-            }*/
+            }
             try {
-                if (object.getClass().getMethod(method.getName(), method.getParameterTypes())
-                        .getDeclaringClass().equals(Object.class)) {
+                if (hasMethod
+                        && !object.getClass().getMethod(method.getName(), method.getParameterTypes())
+                        .getDeclaringClass().equals(object.getClass())) {
                     continue;
                 }
             } catch (NoSuchMethodException e) {
