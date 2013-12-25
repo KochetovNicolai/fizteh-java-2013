@@ -14,6 +14,7 @@ public class Test {
     public interface Executable {
         Object execute(Object[] args);
         void foo(int a);
+        void throwNoArg();
         String toString();
     }
 
@@ -84,6 +85,16 @@ public class Test {
                 System.out.println("film film film");
                 return;
             }
+            @Override
+            public void throwNoArg() {
+                //try {
+                    throw new IllegalStateException("throw no arg");
+
+                //} catch (IllegalStateException e) {
+                    //System.out.println("catch");
+                //}
+
+            }
         };
 
         /*Class<?> clazz = loadClass(runnableWithHelloWorld());
@@ -107,6 +118,13 @@ public class Test {
         proxy.foo(42);
         proxy.toString();
         proxy.hashCode();
+        try {
+            proxy.throwNoArg();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         System.out.println(writer);
+        System.out.println(executable.getClass().getMethod("toString").getDeclaringClass()
+                .equals(Object.class));
     }
 }

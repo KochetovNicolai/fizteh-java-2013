@@ -34,7 +34,7 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
         Type thisType = Type.getType(LoggingProxyFactoryImplAsm.class);
 
         cw.visit(Opcodes.V1_7, Opcodes.ACC_PUBLIC, type.getInternalName(), null,
-                "java/lang/Object", new String[] {Type.getType(interFace).getInternalName()});
+                "java/lang/Object", new String[]{Type.getType(interFace).getInternalName()});
 
         cw.visitField(Opcodes.ACC_PRIVATE,
                 "writer", Type.getDescriptor(writer.getClass()), null, null)
@@ -241,7 +241,7 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 }
                 ga.arrayStore(Type.getType(Object.class));
             }
-            ga.loadThis();
+             ga.loadThis();
             ga.getField(type, "returned", Type.getType(Object.class));
             //ga.loadThis();
             //ga.getField(type, "nullThrowable", Type.getType(Throwable.class));

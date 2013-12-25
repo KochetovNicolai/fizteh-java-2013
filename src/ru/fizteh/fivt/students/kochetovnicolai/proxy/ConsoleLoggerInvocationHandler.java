@@ -101,6 +101,10 @@ class ConsoleLoggerInvocationHandler implements InvocationHandler {
         }
         if (!failed) {
             try {
+                if (!returned) {
+                    writeJSONObject(log, writer);
+                    return;
+                }
                 Object writingValue = null;
                 if (returnValue != null) {
                     if (returnValue.getClass().isArray()) {
@@ -116,16 +120,7 @@ class ConsoleLoggerInvocationHandler implements InvocationHandler {
                     }
                     log.put("returnValue", writingValue);
                 } else {
-                    if (returned) {
-                        log.put("returnValue", JSONObject.NULL);
-                    }              /*
-                    if (!returned) {
-                        writingValue = Void.class;
-                    }
-                    Class type = returnValue.getClass();
-                    if (type.getName().equals("void")) {
-                        writingValue = Void.class;
-                    }                */
+                    log.put("returnValue", JSONObject.NULL);
                 }
                 writeJSONObject(log, writer);
             } catch (Throwable e) {
