@@ -131,7 +131,7 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
         /************************************/
         ga.mark(finallyLabel);
 
-        boolean isReturn = !method.getReturnType().getName().equals("void");
+        boolean isReturn = !method.getReturnType().equals(Void.TYPE);
         Type returnType = Type.getType(method.getReturnType());
         int returned = 0;
         if (isReturn) {
