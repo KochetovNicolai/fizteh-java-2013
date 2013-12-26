@@ -131,14 +131,19 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
         /************************************/
         boolean isReturn = !method.getReturnType().getName().equals("void");
         Type returnType = Type.getType(method.getReturnType());
-        if (returnType.getDescriptor().length() == 1) {
-            returnType = Type.getType(Object.class);
+        int returned;
+        if (returnType.getDescriptor().length() != 1) {
+            returned = ga.newLocal(returnType);
+        } else {
+            returned = ga.newLocal(Type.getType(Object.class));
         }
 
-        int returned = ga.newLocal(returnType);
 
         ga.mark(finallyLabel);
         if (isReturn) {
+            if (returnType.getDescriptor().length() == 1) {
+                ga.box(returnType);
+            }
             ga.storeLocal(returned);
         } else {
             ga.push((Type) null);
@@ -148,9 +153,9 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
         loadArgs(ga, type, writerType, object, types1, mt);
 
         ga.loadLocal(returned);
-        if (returnType.getDescriptor().length() == 1) {
-            ga.box(returnType);
-        }
+        //if (returnType.getDescriptor().length() == 1) {
+        //    ga.box(returnType);
+        //}
         ga.push((Type) null);
         ga.push(isReturn);
 
@@ -159,12 +164,12 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
 
         if (isReturn) {
             ga.loadLocal(returned);
-            /*if (returnType.getDescriptor().length() == 1
-                    || returnType.getDescriptor().charAt(0) == '['
-                    || returnType.equals(Type.getType(String.class))
-                    || returnType.equals(Type.getType(Class.class))) {
+            if (returnType.getDescriptor().length() == 1) {
+                    //|| returnType.getDescriptor().charAt(0) == '['
+                    //|| returnType.equals(Type.getType(String.class))
+                    //|| returnType.equals(Type.getType(Class.class))) {
                 ga.unbox(returnType);
-            } */
+            }
         }
         ga.returnValue();
         ga.endMethod();
