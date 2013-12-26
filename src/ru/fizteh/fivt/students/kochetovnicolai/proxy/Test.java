@@ -111,7 +111,7 @@ public class Test {
             System.out.println(method.getName() + method.getDeclaringClass());
         }
         try {
-            proxy.execute(null);
+            proxy.execute(new Object[0]);
         } catch (IllegalStateException e) {
             System.out.println("I hate empty try/catch blocks!");
         }

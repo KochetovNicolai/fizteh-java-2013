@@ -138,9 +138,11 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
             ga.mark(catchLabel);
 
             ga.catchException(tryLabel, catchLabel, Type.getType(Throwable.class));
-            ga.loadThis();
-            ga.swap();
-            ga.putField(type, "throwable", Type.getType(Throwable.class));
+            //ga.loadThis();
+            //ga.swap();
+            //ga.putField(type, "throwable", Type.getType(Throwable.class));
+            int throwable = ga.newLocal(Type.getType(Throwable.class));
+            ga.storeLocal(throwable);
 
             ga.push(object.getClass().getName());
             ga.push(mt.getName());
@@ -163,28 +165,36 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 ga.arrayStore(Type.getType(Object.class));
             }
             ga.push((Type) null);
-            ga.loadThis();
-            ga.getField(type, "throwable", Type.getType(Throwable.class));
+            //ga.loadThis();
+            //ga.getField(type, "throwable", Type.getType(Throwable.class));
+            ga.loadLocal(throwable);
             ga.push(false);
 
             ga.invokeStatic(Type.getType(ConsoleLoggerInvocationHandler.class), writeLog);  // <---IllegalAccessError
-            ga.loadThis();
-            ga.getField(type, "throwable", Type.getType(Throwable.class));
+            //ga.loadThis();
+            //ga.getField(type, "throwable", Type.getType(Throwable.class));
+            ga.loadLocal(throwable);
             ga.throwException();
 
 
             /************************************/
-            boolean returned = !method.getReturnType().getName().equals("void");
+            boolean isReturn = !method.getReturnType().getName().equals("void");
+            Type returnType = Type.getType(method.getReturnType());
+            int returned = ga.newLocal(Type.getType(Object.class));
 
             ga.mark(finallyLabel);
-            if (returned) {
-                ga.loadThis();
-                ga.swap();
-                Type returnType = Type.getType(method.getReturnType());
+            if (isReturn) {
+                //ga.loadThis();
+                //ga.swap();
+
                 if (returnType.getDescriptor().length() == 1) {
                     ga.box(returnType);
                 }
-                ga.putField(type, "returned", Type.getType(Object.class));
+                //ga.putField(type, "returned", Type.getType(Object.class));
+                ga.storeLocal(returned);
+            } else {
+                ga.push((Type) null);
+                ga.storeLocal(returned);
             }
 
             ga.push(object.getClass().getName());
@@ -204,17 +214,19 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
                 ga.arrayStore(Type.getType(Object.class));
             }
 
-            ga.loadThis();
-            ga.getField(type, "returned", Type.getType(Object.class));
+            //ga.loadThis();
+            //ga.getField(type, "returned", Type.getType(Object.class));
+            ga.loadLocal(returned);
             ga.push((Type) null);
-            ga.push(returned);
+            ga.push(isReturn);
+
 
             ga.invokeStatic(Type.getType(ConsoleLoggerInvocationHandler.class), writeLog);
 
-            if (returned) {
-                ga.loadThis();
-                Type returnType = Type.getType(method.getReturnType());
-                ga.getField(type, "returned", Type.getType(Object.class));
+            if (isReturn) {
+                //ga.loadThis();
+                //ga.getField(type, "returned", Type.getType(Object.class));
+                ga.loadLocal(returned);
                 if (returnType.getDescriptor().length() == 1
                         || returnType.getDescriptor().charAt(0) == '['
                         || returnType.equals(Type.getType(String.class))
