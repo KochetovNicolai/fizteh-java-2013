@@ -129,30 +129,26 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
 
 
         /************************************/
+        ga.mark(finallyLabel);
+
         boolean isReturn = !method.getReturnType().getName().equals("void");
         Type returnType = Type.getType(method.getReturnType());
-        int returned;
-        if (returnType.getDescriptor().length() != 1) {
-            returned = ga.newLocal(returnType);
-        } else {
-            returned = ga.newLocal(Type.getType(Object.class));
-        }
-
-
-        ga.mark(finallyLabel);
+        int returned = 0;
         if (isReturn) {
-            if (returnType.getDescriptor().length() == 1) {
-                ga.box(returnType);
-            }
-            ga.storeLocal(returned);
-        } else {
-            ga.push((Type) null);
+            returned = ga.newLocal(returnType);
             ga.storeLocal(returned);
         }
 
         loadArgs(ga, type, writerType, object, types1, mt);
 
-        ga.loadLocal(returned);
+        if (isReturn) {
+            ga.loadLocal(returned);
+            if (returnType.getDescriptor().length() == 1) {
+                ga.box(returnType);
+            }
+        } else {
+            ga.push((Type) null);
+        }
         ga.push((Type) null);
         ga.push(isReturn);
 
@@ -161,9 +157,6 @@ public class LoggingProxyFactoryImplAsm implements LoggingProxyFactory {
 
         if (isReturn) {
             ga.loadLocal(returned);
-            if (returnType.getDescriptor().length() == 1) {
-                ga.unbox(returnType);
-            }
         }
         ga.returnValue();
         ga.endMethod();
